@@ -1,7 +1,7 @@
     <nav class="pc-sidebar animate-fadeInUp">
         <div class="navbar-wrapper">
             <div class="m-header">
-                <a href="/../dashboard/index.html" class="b-brand d-flex align-items-center text-decoration-none">
+                <a href="#" class="b-brand d-flex align-items-center text-decoration-none">
                     <!-- Logo -->
                     <img src="/../assets/images/logo-ptpn-no-font.png" style="width: 60px;" class="img-fluid logo-lg me-2"
                         alt="logo">

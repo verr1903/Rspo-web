@@ -1,4 +1,6 @@
 <x-layout>
+
+<x-slot:title>{{$title}}</x-slot:title>
   <style>
     html {
       overflow-y: scroll;

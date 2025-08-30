@@ -127,7 +127,7 @@
             <!-- Teks PTPN 5 -->
             <span
               style="font-family: 'Poppins', sans-serif; color: #30B2EB; font-size: 25px; margin-top: 10px;font-weight: 600;">
-              PTPN 5
+              RSPO
             </span>
           </a>
         </div>

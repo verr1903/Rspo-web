@@ -1,5 +1,7 @@
 <x-layout>
 
+<x-slot:title>{{$title}}</x-slot:title>
+
   <!-- [ Main Content ] start -->
   <div class="pc-container animate-fadeInUp">
     <div class="pc-content">
