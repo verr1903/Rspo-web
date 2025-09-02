@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Kebun;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Exports\RekapKebunExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class KebunController extends Controller
 {
@@ -122,5 +124,28 @@ class KebunController extends Controller
         $kebun->delete();
 
         return redirect()->route('kebun')->with('success', 'Data berhasil dihapus!');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        // Query filter sama dengan index()
+        $query = Kebun::query();
+
+        if ($request->filled('startDate')) {
+            $query->where('tanggal_pengiriman', '>=', $request->startDate);
+        }
+
+        if ($request->filled('endDate')) {
+            $query->where('tanggal_pengiriman', '<=', $request->endDate);
+        }
+
+        if ($request->filled('namaKebun')) {
+            $query->where('nama_kebun', $request->namaKebun);
+        }
+
+        $rows = $query->get();
+
+        // lempar rows ke export
+        return Excel::download(new RekapKebunExport($rows), 'rekap_kebun.xlsx');
     }
 }

@@ -16,11 +16,14 @@
       <!-- End Alert -->
 
       <!-- button download excel -->
-      <div class="d-flex justify-content-end mb-3 mt-3 animate-fadeInUp" style="animation-delay:0.20s;">
-        <button type="button" id="downloadExcel" class="btn btn-success">
+      <div class="d-flex justify-content-end mb-3 mt-3">
+        <button id="downloadExcelBtn" class="btn btn-success">
           Download EXCEL
         </button>
       </div>
+
+
+
       <!-- end download excel -->
 
       <!-- filter -->
@@ -43,7 +46,7 @@
           <div class="d-flex flex-column">
             <label for="namaKebun" class="form-label mb-1">Nama Kebun</label>
             <select class="form-select w-auto" name="namaKebun" id="namaKebun">
-              <option value="">-- Pilih Kebun --</option>
+              <option value="">Semua Kebun</option>
               @foreach($namaKebuns as $kebun)
               <option value="{{ $kebun }}" {{ request('namaKebun') == $kebun ? 'selected' : '' }}>
                 {{ $kebun }}
@@ -55,7 +58,14 @@
 
           <!-- Tombol Filter -->
           <div class="d-flex flex-column justify-content-end">
-            <button type="submit" class="btn btn-primary py-3">Filter</button>
+            <button type="submit" class="btn btn-primary py-3 px-4">Filter</button>
+          </div>
+
+          <!-- tombol reset filter -->
+          <div class="d-flex flex-column justify-content-end">
+            <button type="button" id="resetFilter" class="btn btn-warning py-3 px-4">
+              Reset
+            </button>
           </div>
 
         </div>
@@ -563,6 +573,66 @@
         preview.src = '';
         wrapper.style.display = 'none';
       }
+    });
+
+    // cetak excel
+    document.getElementById('downloadExcelBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+
+      // Cek apakah ada filter aktif
+      let startDate = document.getElementById('startDate').value;
+      let endDate = document.getElementById('endDate').value;
+      let namaKebun = document.getElementById('namaKebun').value;
+
+      let url = "{{ route('exportExcel.rekapKebun') }}";
+      let params = [];
+
+      if (startDate) params.push('startDate=' + startDate);
+      if (endDate) params.push('endDate=' + endDate);
+      if (namaKebun) params.push('namaKebun=' + namaKebun);
+
+      if (params.length > 0) {
+        url += "?" + params.join("&");
+      }
+
+      let message = (params.length > 0) ?
+        "Anda akan mendownload Excel sesuai dengan filter yang dipilih." :
+        "Anda akan mendownload Excel berisi seluruh data.";
+
+      Swal.fire({
+        title: 'Konfirmasi Download',
+        text: message,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Download',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = url; // arahkan ke route export
+        }
+      });
+    });
+
+    // reset filter
+    document.getElementById('resetFilter').addEventListener('click', function() {
+      Swal.fire({
+        title: 'Reset Filter?',
+        text: "Semua filter akan dikosongkan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, reset!',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // kosongkan semua input filter
+          document.getElementById('filterForm').reset();
+
+          // redirect ke index tanpa query string (biar tampil semua data)
+          window.location.href = "{{ route('kebun') }}";
+        }
+      })
     });
   </script>
 
