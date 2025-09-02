@@ -26,7 +26,7 @@ class PksFactory extends Factory
     {
         return [
             'tanggal_pengiriman'    => $this->faker->date(),
-            'nama_pks'              => $this->faker->randomElement(['PKS A', 'PKS B', 'PKS C']),
+            'nama_pks'              => $this->faker->randomElement(['PKS Tandun', 'PKS Sei Rokan']),
             'tujuan_pengiriman'     => $this->faker->city(),
             'nomor_blanko_pb33'     => $this->faker->numerify('PB33-###'),
             'nopol_mobil'           => $this->faker->bothify('BK #### ??'),

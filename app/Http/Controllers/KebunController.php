@@ -7,12 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\RekapKebunExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\ListKebun;
+use App\Models\ListAfdeling;
 
 class KebunController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil daftar nama kebun unik dari database
         $namaKebuns = Kebun::select('nama_kebun')
             ->distinct()
             ->orderBy('nama_kebun')
@@ -20,27 +21,30 @@ class KebunController extends Controller
 
         $query = Kebun::query();
 
-        // Filter tanggal mulai
         if ($request->filled('startDate')) {
             $query->where('tanggal_pengiriman', '>=', $request->startDate);
         }
 
-        // Filter tanggal akhir
         if ($request->filled('endDate')) {
             $query->where('tanggal_pengiriman', '<=', $request->endDate);
         }
 
-        // Filter nama kebun
         if ($request->filled('namaKebun')) {
             $query->where('nama_kebun', $request->namaKebun);
         }
 
         $kebuns = $query->paginate(10)->withQueryString();
 
+        // 🔹 ambil list kebun & afdeling untuk dropdown edit
+        $listKebuns = ListKebun::orderBy('nama_kebun')->get();
+        $listAfdelings = ListAfdeling::orderBy('afdeling')->get();
+
         return view('admin.rekapKebun', [
             'title' => 'Rekap Kebun',
             'kebuns' => $kebuns,
-            'namaKebuns' => $namaKebuns, // kirim ke view
+            'namaKebuns' => $namaKebuns,
+            'listKebuns' => $listKebuns,
+            'listAfdelings' => $listAfdelings,
         ]);
     }
 

@@ -27,8 +27,8 @@ class KebunFactory extends Factory
     {
         return [
             'tanggal_pengiriman' => $this->faker->date(),
-            'nama_kebun' => $this->faker->randomElement(['Kebun A', 'Kebun B', 'Kebun C']),
-            'afdeling' => $this->faker->word(),
+            'nama_kebun' => $this->faker->randomElement(['Kebun Tandun', 'Kebun Sei Berlian', 'Kebun Sei Lindai', 'Kebun Sei Rokan', 'Kebun Sei Intan', 'Kebun Sei Tapung']),
+            'afdeling' => $this->faker->randomElement(['I', 'II', 'III', 'IV', 'V', 'VI','VII','VIII','IX','X']),
             'nomor_blanko_pb25' => $this->faker->numerify('PB25-###'),
             'nopol_mobil' => $this->faker->bothify('BK #### ??'),
             'nama_supir' => $this->faker->name(),

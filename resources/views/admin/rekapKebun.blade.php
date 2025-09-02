@@ -331,13 +331,24 @@
 
                 <div class="mb-2">
                   <label for="edit_kebun" class="form-label">Nama Kebun</label>
-                  <input type="text" class="form-control form-control-sm" id="edit_kebun" name="nama_kebun" required>
+                  <select class="form-select form-select-sm" id="edit_kebun" name="nama_kebun" required>
+                    <option value="">-- Pilih Kebun --</option>
+                    @foreach($listKebuns as $lk)
+                    <option value="{{ $lk->nama_kebun }}">{{ $lk->nama_kebun }}</option>
+                    @endforeach
+                  </select>
                 </div>
 
                 <div class="mb-2">
                   <label for="edit_afdeling" class="form-label">Afdeling</label>
-                  <input type="text" class="form-control form-control-sm" id="edit_afdeling" name="afdeling" required>
+                  <select class="form-select form-select-sm" id="edit_afdeling" name="afdeling" required>
+                    <option value="">-- Pilih Afdeling --</option>
+                    @foreach($listAfdelings as $la)
+                    <option value="{{ $la->afdeling }}">{{ $la->afdeling }}</option>
+                    @endforeach
+                  </select>
                 </div>
+
               </div>
 
               <!-- Kolom Kanan -->
