@@ -1,61 +1,92 @@
 <x-layout>
 
-<x-slot:title>{{$title}}</x-slot:title>
+  <x-slot:title>{{$title}}</x-slot:title>
 
-  <!-- [ Main Content ] start -->
   <div class="pc-container animate-fadeInUp">
     <div class="pc-content">
-      <!-- [ breadcrumb ] start -->
 
-      <!-- [ breadcrumb ] end -->
 
-      <!-- [ Main Content ] start -->
+
+      @if ($errors->any())
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ $errors->first() }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      @endif
+      <!-- End Alert -->
+
+      <!-- button download excel -->
       <div class="d-flex justify-content-end mb-3 mt-3 animate-fadeInUp" style="animation-delay:0.20s;">
         <button type="button" id="downloadExcel" class="btn btn-success">
           Download EXCEL
         </button>
       </div>
+      <!-- end download excel -->
 
-      <div class="row mb-3 animate-fadeInUp" style="animation-delay:0.20s;">
-        <div class="col-12">
-          <div class="d-flex justify-content-end gap-2 flex-wrap">
+      <!-- filter -->
+      <form id="filterForm" method="GET" action="{{ route('kebun') }}">
+        <div class="d-flex justify-content-end gap-2 flex-wrap mb-4 animate-fadeInUp" style="animation-delay:0.20s;">
 
-            <!-- Filter Tanggal -->
-            <div class="d-flex flex-column">
-              <label for="startDate" class="form-label mb-1">Tanggal Mulai</label>
-              <input type="date" class="form-control w-auto" id="startDate">
-            </div>
-
-            <div class="d-flex flex-column">
-              <label for="endDate" class="form-label mb-1">Tanggal Akhir</label>
-              <input type="date" class="form-control w-auto" id="endDate">
-            </div>
-
-            <!-- Filter Nama Kebun -->
-            <div class="d-flex flex-column">
-              <label for="namaKebun" class="form-label mb-1">Nama Kebun</label>
-              <select class="form-select w-auto" id="namaKebun">
-                <option value="">-- Pilih Kebun --</option>
-                <option value="Kebun A">Kebun A</option>
-                <option value="Kebun B">Kebun B</option>
-                <option value="Kebun C">Kebun C</option>
-              </select>
-            </div>
-
-            <!-- Tombol Filter -->
-            <div class="d-flex flex-column justify-content-end">
-              <button id="filterDate" class="btn btn-primary py-3">Filter</button>
-            </div>
-
+          <!-- Tanggal Mulai -->
+          <div class="d-flex flex-column">
+            <label for="startDate" class="form-label mb-1">Tanggal Mulai</label>
+            <input type="date" class="form-control w-auto" name="startDate" id="startDate" value="{{ request('startDate') }}">
           </div>
-        </div>
-      </div>
 
+          <!-- Tanggal Akhir -->
+          <div class="d-flex flex-column">
+            <label for="endDate" class="form-label mb-1">Tanggal Akhir</label>
+            <input type="date" class="form-control w-auto" name="endDate" id="endDate" value="{{ request('endDate') }}">
+          </div>
+
+          <!-- Nama Kebun -->
+          <div class="d-flex flex-column">
+            <label for="namaKebun" class="form-label mb-1">Nama Kebun</label>
+            <select class="form-select w-auto" name="namaKebun" id="namaKebun">
+              <option value="">-- Pilih Kebun --</option>
+              @foreach($namaKebuns as $kebun)
+              <option value="{{ $kebun }}" {{ request('namaKebun') == $kebun ? 'selected' : '' }}>
+                {{ $kebun }}
+              </option>
+              @endforeach
+            </select>
+          </div>
+
+
+          <!-- Tombol Filter -->
+          <div class="d-flex flex-column justify-content-end">
+            <button type="submit" class="btn btn-primary py-3">Filter</button>
+          </div>
+
+        </div>
+      </form>
+      <!-- end filter -->
 
       <div class="row animate-fadeInUp" style="animation-delay:0.20s;">
-        <!-- [ Typography ] start -->
+
+        <!-- Alert Notifikasi -->
+        @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="successAlert">
+          {{ session('success') }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <script>
+          // Tunggu 5 detik (5000ms), lalu tutup alert
+          setTimeout(function() {
+            const alertElement = document.getElementById('successAlert');
+            if (alertElement) {
+              const alert = new bootstrap.Alert(alertElement);
+              alert.close();
+            }
+          }, 2500);
+        </script>
+        @endif
+
+
         <div class="col-sm-12">
           <div class="card p-3">
+
             <!-- Tabel -->
             <table class="table table-bordered text-center">
               <thead>
@@ -69,48 +100,134 @@
                 </tr>
               </thead>
               <tbody>
+                <!-- pengulangan -->
+                @forelse ($kebuns as $index => $kebun)
                 <tr>
-                  <td>1</td>
-                  <td>2025-08-28</td>
-                  <td>PTPN 5</td>
-                  <td>Pabrik A</td>
+                  <td>{{ $loop->iteration + ($kebuns->currentPage()-1) * $kebuns->perPage() }}</td>
+                  <td>{{ $kebun->tanggal_pengiriman }}</td>
+                  <td>{{ $kebun->nama_kebun }}</td>
+                  <td>{{ $kebun->afdeling }}</td>
+
                   <!-- Tombol detail -->
                   <td>
-                    <button class="btn btn-info btn-sm" style="border-radius:50%;" title="Detail" data-bs-toggle="modal"
-                      data-bs-target="#detailModal">
+                    <button class="btn btn-info btn-sm btn-detail" style="border-radius:50%;" title="Detail"
+                      data-bs-toggle="modal" data-bs-target="#detailModal"
+                      data-id="{{ $kebun->id }}"
+                      data-tanggal="{{ $kebun->tanggal_pengiriman }}"
+                      data-kebun="{{ $kebun->nama_kebun }}"
+                      data-afdeling="{{ $kebun->afdeling }}"
+                      data-blanko="{{ $kebun->nomor_blanko_pb25 }}"
+                      data-nopol="{{ $kebun->nopol_mobil }}"
+                      data-supir="{{ $kebun->nama_supir }}"
+                      data-foto1="{{ $kebun->foto_keseluruhan_kebun }}"
+                      data-foto2="{{ $kebun->foto_sebelum_kebun }}"
+                      data-foto3="{{ $kebun->foto_sesudah_kebun }}">
                       <i class="ti ti-eye"></i>
                     </button>
                   </td>
+
                   <!-- Tombol aksi -->
                   <td>
                     <div class="btn-group" role="group">
-                      <button class="me-1 btn btn-sm btn-warning" style="border-radius: 50%;" title="Edit"
-                        data-bs-toggle="modal" data-bs-target="#editModal" data-tanggal="2025-08-28" data-kebun="PTPN 5"
-                        data-tujuan="Pabrik A">
+                      <!-- button edit -->
+                      <button
+                        type="button" style="border-radius: 50%;"
+                        class="btn btn-warning btn-sm btn-edit me-1"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editModal"
+                        data-id="{{ $kebun->id }}"
+                        data-tanggal="{{ $kebun->tanggal_pengiriman }}"
+                        data-kebun="{{ $kebun->nama_kebun }}"
+                        data-afdeling="{{ $kebun->afdeling }}"
+                        data-blanko="{{ $kebun->nomor_blanko_pb25 }}"
+                        data-nopol="{{ $kebun->nopol_mobil }}"
+                        data-supir="{{ $kebun->nama_supir }}"
+                        data-foto1="{{ $kebun->foto_keseluruhan_kebun }}"
+                        data-foto2="{{ $kebun->foto_sebelum_kebun }}"
+                        data-foto3="{{ $kebun->foto_sesudah_kebun }}">
                         <i class="ti ti-pencil"></i>
                       </button>
-                      <button class="me-1 btn btn-sm btn-danger" style="border-radius: 50%;" title="Hapus" data-id="1">
+
+                      <!-- button hapus -->
+                      <button class="btn btn-sm btn-danger btn-delete me-1" style="border-radius: 50%;"
+                        data-id="{{ $kebun->id }}" title="Hapus">
                         <i class="ti ti-trash"></i>
                       </button>
-                      <a href="/../Review Proposal - Cover Map.pdf" class="btn btn-sm btn-primary"
+
+                      <!-- button donwload pdf -->
+                      <a href="#" class="btn btn-sm btn-primary"
                         style="border-radius:50%;" title="Download PDF" target="_blank">
                         <i class="ti ti-download"></i>
                       </a>
                     </div>
                   </td>
                 </tr>
+                @empty
+                <tr>
+                  <td colspan="6">Tidak ada data</td>
+                </tr>
+                @endforelse
+                <!-- end pengulangan -->
               </tbody>
             </table>
+
+            <!-- form delete -->
+            <form id="deleteForm" method="POST" style="display:none;">
+              @csrf
+              @method('DELETE')
+            </form>
+
+            <!-- Pagination -->
+            <div class="mt-3">
+              <div class="mt-3">
+                @if ($kebuns->hasPages())
+                <nav>
+                  <ul class="pagination justify-content-center my-3">
+                    {{-- Tombol Sebelumnya --}}
+                    @if ($kebuns->onFirstPage())
+                    <li class="page-item me-2 disabled"><span class="page-link rounded-pill">&laquo;</span></li>
+                    @else
+                    <li class="page-item me-2">
+                      <a class="page-link rounded-pill" href="{{ $kebuns->previousPageUrl() }}" rel="prev">&laquo;</a>
+                    </li>
+                    @endif
+
+                    {{-- Nomor Halaman --}}
+                    @foreach ($kebuns->links()->elements[0] as $page => $url)
+                    @if ($page == $kebuns->currentPage())
+                    <li class="page-item me-2 active">
+                      <span class="page-link rounded-pill bg-primary border-0 shadow-sm">{{ $page }}</span>
+                    </li>
+                    @else
+                    <li class="page-item me-2">
+                      <a class="page-link rounded-pill hover-shadow" href="{{ $url }}">{{ $page }}</a>
+                    </li>
+                    @endif
+                    @endforeach
+
+                    {{-- Tombol Berikutnya --}}
+                    @if ($kebuns->hasMorePages())
+                    <li class="page-item me-2">
+                      <a class="page-link rounded-pill" href="{{ $kebuns->nextPageUrl() }}" rel="next">&raquo;</a>
+                    </li>
+                    @else
+                    <li class="page-item me-2 disabled"><span class="page-link rounded-pill">&raquo;</span></li>
+                    @endif
+                  </ul>
+                </nav>
+                @endif
+              </div>
+
+            </div>
+            <!-- end pagination -->
+
           </div>
         </div>
-        <!-- [ Typography ] end -->
       </div>
-      <!-- [ Main Content ] end -->
     </div>
   </div>
-  <!-- [ Main Content ] end -->
 
-  <!-- Modal Detail (seperti sebelumnya) -->
+  <!-- Modal Detail -->
   <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -123,27 +240,27 @@
           <table class="table table-bordered">
             <tr>
               <th>Tanggal Pengiriman</th>
-              <td>2025-08-28</td>
+              <td data-field="tanggal"></td>
             </tr>
             <tr>
               <th>Nama Kebun</th>
-              <td>PTPN 5</td>
+              <td data-field="kebun"></td>
             </tr>
             <tr>
               <th>Afdeling</th>
-              <td>Pabrik A</td>
+              <td data-field="afdeling"></td>
             </tr>
             <tr>
               <th>Nomor Blanko PB 25</th>
-              <td>PB33-1234</td>
+              <td data-field="blanko"></td>
             </tr>
             <tr>
               <th>Nopol Mobil</th>
-              <td>BM 1234 CD</td>
+              <td data-field="nopol"></td>
             </tr>
             <tr>
               <th>Nama Supir</th>
-              <td>Budi Santoso</td>
+              <td data-field="supir"></td>
             </tr>
           </table>
           <!-- 3 Gambar -->
@@ -151,24 +268,21 @@
             <div class="col-md-4 text-center">
               <label>Gambar 1</label>
               <div>
-                <img src="/../assets/images/logo-ptpn-no-font.png" style="width: 100px;" class=" img-fluid rounded mt-2"
-                  alt="Gambar 1">
+                <img data-foto="1" style="width: 100px;" class="img-fluid rounded mt-2">
               </div>
             </div>
 
             <div class="col-md-4 text-center">
               <label>Gambar 2</label>
               <div>
-                <img src="/../assets/images/logo-ptpn-no-font.png" style="width: 100px;" class=" img-fluid rounded mt-2"
-                  alt="Gambar 1">
+                <img data-foto="2" style="width: 100px;" class="img-fluid rounded mt-2">
               </div>
             </div>
 
             <div class="col-md-4 text-center">
               <label>Gambar 3</label>
               <div>
-                <img src="/../assets/images/logo-ptpn-no-font.png" style="width: 100px;" class=" img-fluid rounded mt-2"
-                  alt="Gambar 1">
+                <img data-foto="3" style="width: 100px;" class="img-fluid rounded mt-2">
               </div>
             </div>
           </div>
@@ -179,89 +293,277 @@
       </div>
     </div>
   </div>
+  <!-- end modal detail -->
 
-  <!-- Modal Edit -->
-  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+  <!-- Modal Edit (global) -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg"> <!-- Lebar lebih besar untuk muat 2 kolom -->
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editModalLabel">Edit Pengiriman</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="formEditDetail">
-            <div class="row">
+        <form id="editForm" method="POST" enctype="multipart/form-data">
+          @csrf
+          @method('PUT')
+
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Pengiriman</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <input type="hidden" id="edit_id" name="id">
+            <div class="row g-2"> <!-- g-2: jarak antar kolom lebih rapat -->
+
               <!-- Kolom Kiri -->
               <div class="col-md-6">
-                <div class="mb-3">
-                  <label class="form-label">Tanggal Pengiriman</label>
-                  <input type="date" class="form-control" name="tanggal" value="2025-08-28">
+                <div class="mb-2">
+                  <label for="edit_tanggal" class="form-label">Tanggal Pengiriman</label>
+                  <input type="date" class="form-control form-control-sm" id="edit_tanggal" name="tanggal_pengiriman" required>
                 </div>
-                <div class="mb-3">
-                  <label class="form-label">Nama Kebun</label>
-                  <input type="text" class="form-control" name="kebun" value="PTPN 5">
+
+                <div class="mb-2">
+                  <label for="edit_kebun" class="form-label">Nama Kebun</label>
+                  <input type="text" class="form-control form-control-sm" id="edit_kebun" name="nama_kebun" required>
                 </div>
-                <div class="mb-3">
-                  <label class="form-label">Afdeling</label>
-                  <input type="text" class="form-control" name="tujuan" value="Pabrik A">
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label class="form-label">Nomor Blanko PB 25</label>
-                  <input type="text" class="form-control" name="blanko" value="PB33-1234">
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Nopol Mobil</label>
-                  <input type="text" class="form-control" name="nopol" value="BM 1234 CD">
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Nama Supir</label>
-                  <input type="text" class="form-control" name="supir" value="Budi Santoso">
+
+                <div class="mb-2">
+                  <label for="edit_afdeling" class="form-label">Afdeling</label>
+                  <input type="text" class="form-control form-control-sm" id="edit_afdeling" name="afdeling" required>
                 </div>
               </div>
 
-              <!-- Kolom Kanan (untuk upload gambar) -->
+              <!-- Kolom Kanan -->
               <div class="col-md-6">
-                <div class="mb-3">
-                  <label class="form-label">Gambar 1</label>
-                  <input type="file" class="form-control" name="gambar1">
-                  <div class="text-center">
-                    <img src="/../assets/images/logo-ptpn-no-font.png" style="width: 100px;"
-                      class=" img-fluid rounded mt-2" alt="Gambar 1">
+                <div class="mb-2">
+                  <label for="edit_nopol" class="form-label">Nopol Mobil</label>
+                  <input type="text" class="form-control form-control-sm" id="edit_nopol" name="nopol_mobil" required>
+                </div>
+
+                <div class="mb-2">
+                  <label for="edit_supir" class="form-label">Nama Supir</label>
+                  <input type="text" class="form-control form-control-sm" id="edit_supir" name="nama_supir" required>
+                </div>
+
+                <div class="mb-2">
+                  <label for="edit_blanko" class="form-label">Nomor Blanko</label>
+                  <input type="text" class="form-control form-control-sm" id="edit_blanko" name="nomor_blanko_pb25" required>
+                </div>
+
+              </div>
+
+              <div class="row">
+                <!-- gambar 1 -->
+                <div class="col-md-4 text-center mb-3">
+                  <div class="image-upload-card p-2 rounded shadow-sm border">
+                    <!-- Label -->
+                    <label for="gambar1" class="form-label fw-bold" style="font-size: 16px;">Gambar 1</label>
+
+                    <!-- Gambar lama -->
+                    <div class="mb-2">
+                      <img id="preview1" style="max-height:100px; width:auto;" class="img-fluid rounded border">
+                    </div>
+
+                    <!-- Input file -->
+                    <div class="mb-2">
+                      <input type="file" class="form-control form-control-sm" name="gambar1" id="gambar1_input">
+                    </div>
+
+                    <!-- Preview gambar baru -->
+                    <div class="mb-1" style="display:none;" id="preview1_wrapper">
+                      <label class="form-label small text-muted">Preview Baru:</label>
+                      <img id="preview1_new" style="max-height:100px; width:auto;" class="img-fluid rounded border mt-1">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- gambar 2 -->
+                <div class="col-md-4 text-center mb-3">
+                  <div class="image-upload-card p-2 rounded shadow-sm border">
+                    <!-- Label -->
+                    <label for="gambar2" class="form-label fw-bold" style="font-size: 16px;">Gambar 1</label>
+
+                    <!-- Gambar lama -->
+                    <div class="mb-2">
+                      <img id="preview2" style="max-height:100px; width:auto;" class="img-fluid rounded border">
+                    </div>
+
+                    <!-- Input file -->
+                    <div class="mb-2">
+                      <input type="file" class="form-control form-control-sm" name="gambar2" id="gambar2_input">
+                    </div>
+
+                    <!-- Preview gambar baru -->
+                    <div class="mb-1" style="display:none;" id="preview2_wrapper">
+                      <label class="form-label small text-muted">Preview Baru:</label>
+                      <img id="preview2_new" style="max-height:100px; width:auto;" class="img-fluid rounded border mt-1">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Gambar 3 -->
+                <div class="col-md-4 text-center mb-3">
+                  <div class="image-upload-card p-2 rounded shadow-sm border">
+                    <!-- Label -->
+                    <label for="gambar3" class="form-label fw-bold" style="font-size: 16px;">Gambar 1</label>
+
+                    <!-- Gambar lama -->
+                    <div class="mb-2">
+                      <img id="preview3" style="max-height:100px; width:auto;" class="img-fluid rounded border">
+                    </div>
+
+                    <!-- Input file -->
+                    <div class="mb-2">
+                      <input type="file" class="form-control form-control-sm" name="gambar3" id="gambar3_input">
+                    </div>
+
+                    <!-- Preview gambar baru -->
+                    <div class="mb-1" style="display:none;" id="preview3_wrapper">
+                      <label class="form-label small text-muted">Preview Baru:</label>
+                      <img id="preview3_new" style="max-height:100px; width:auto;" class="img-fluid rounded border mt-1">
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label class="form-label">Gambar 2</label>
-                  <input type="file" class="form-control" name="gambar2">
-                  <div class="text-center">
-                    <img src="/../assets/images/logo-ptpn-no-font.png" style="width: 100px;"
-                      class=" img-fluid rounded mt-2" alt="Gambar 2">
-                  </div>
-                </div>
-              </div>
-              <div class="offset-3 col-md-6">
-                <div class="mb-3">
-                  <label class="form-label">Gambar 3</label>
-                  <input type="file" class="form-control" name="gambar3">
-                  <div class="text-center">
-                    <img src="/../assets/images/logo-ptpn-no-font.png" style="width: 100px;"
-                      class=" img-fluid rounded mt-2" alt="Gambar 3">
-                  </div>
-                </div>
-              </div>
+
+
             </div>
-          </form>
+          </div>
 
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary" form="editForm">Simpan Perubahan</button>
-        </div>
+          <div class="modal-footer py-2">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+            <button type="submit" class="btn btn-primary btn-sm">Simpan Perubahan</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
+  <!-- end modal edit -->
+
+  <script>
+    // Modal Detail
+    document.addEventListener("DOMContentLoaded", function() {
+      const detailModal = document.getElementById('detailModal');
+      detailModal.addEventListener('show.bs.modal', function(event) {
+        let button = event.relatedTarget;
+
+        this.querySelector("td[data-field='tanggal']").textContent = button.getAttribute("data-tanggal");
+        this.querySelector("td[data-field='kebun']").textContent = button.getAttribute("data-kebun");
+        this.querySelector("td[data-field='afdeling']").textContent = button.getAttribute("data-afdeling");
+        this.querySelector("td[data-field='blanko']").textContent = button.getAttribute("data-blanko");
+        this.querySelector("td[data-field='nopol']").textContent = button.getAttribute("data-nopol");
+        this.querySelector("td[data-field='supir']").textContent = button.getAttribute("data-supir");
+
+        this.querySelector("img[data-foto='1']").src = "/storage/" + button.getAttribute("data-foto1");
+        this.querySelector("img[data-foto='2']").src = "/storage/" + button.getAttribute("data-foto2");
+        this.querySelector("img[data-foto='3']").src = "/storage/" + button.getAttribute("data-foto3");
+      });
+    });
+
+    // Modal Edit (global)
+    const editModal = document.getElementById('editModal');
+    editModal.addEventListener('show.bs.modal', function(event) {
+      let button = event.relatedTarget;
+
+      // isi form
+      document.getElementById('edit_id').value = button.getAttribute("data-id");
+      document.getElementById('edit_tanggal').value = button.getAttribute("data-tanggal");
+      document.getElementById('edit_kebun').value = button.getAttribute("data-kebun");
+      document.getElementById('edit_afdeling').value = button.getAttribute("data-afdeling");
+      document.getElementById('edit_blanko').value = button.getAttribute("data-blanko");
+      document.getElementById('edit_nopol').value = button.getAttribute("data-nopol");
+      document.getElementById('edit_supir').value = button.getAttribute("data-supir");
+
+      // update action form sesuai id
+      document.getElementById('editForm').action = "/rekapKebun/" + button.getAttribute("data-id");
+
+      // preview gambar
+      document.getElementById('preview1').src = "/storage/" + button.getAttribute("data-foto1");
+      document.getElementById('preview2').src = "/storage/" + button.getAttribute("data-foto2");
+      document.getElementById('preview3').src = "/storage/" + button.getAttribute("data-foto3");
+    });
+
+    // Hapus data dengan SweetAlert
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelectorAll('.btn-delete').forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault(); // mencegah default behavior
+
+          const id = this.getAttribute('data-id');
+
+          Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Data ini akan dihapus permanen!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const form = document.getElementById('deleteForm');
+              form.action = '/rekapKebun/' + id; // route delete
+              form.submit(); // submit form
+            }
+          });
+        });
+      });
+    });
+
+    // preview gambar 1 baru sebelum upload
+    document.getElementById('gambar1_input').addEventListener('change', function(e) {
+      const preview = document.getElementById('preview1_new');
+      const wrapper = document.getElementById('preview1_wrapper');
+      const file = e.target.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          wrapper.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+      } else {
+        preview.src = '';
+        wrapper.style.display = 'none';
+      }
+    });
+
+    // preview gambar 2 baru sebelum upload
+    document.getElementById('gambar2_input').addEventListener('change', function(e) {
+      const preview = document.getElementById('preview2_new');
+      const wrapper = document.getElementById('preview2_wrapper');
+      const file = e.target.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          wrapper.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+      } else {
+        preview.src = '';
+        wrapper.style.display = 'none';
+      }
+    });
+
+    // preview gambar 2 baru sebelum upload
+    document.getElementById('gambar3_input').addEventListener('change', function(e) {
+      const preview = document.getElementById('preview3_new');
+      const wrapper = document.getElementById('preview3_wrapper');
+      const file = e.target.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          wrapper.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+      } else {
+        preview.src = '';
+        wrapper.style.display = 'none';
+      }
+    });
+  </script>
 
 </x-layout>

@@ -4,16 +4,123 @@ namespace App\Http\Controllers;
 
 use App\Models\Kebun;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class KebunController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil data dengan pagination (10 per halaman)
-        $kebuns = Kebun::select('tanggal_pengiriman', 'nama_kebun', 'afdeling')
-            ->paginate(10);
+        // Ambil daftar nama kebun unik dari database
+        $namaKebuns = Kebun::select('nama_kebun')
+            ->distinct()
+            ->orderBy('nama_kebun')
+            ->pluck('nama_kebun');
 
-        // kirim ke view admin/rekapKebun.blade.php
-        return view('admin.rekapKebun', compact('kebuns'));
+        $query = Kebun::query();
+
+        // Filter tanggal mulai
+        if ($request->filled('startDate')) {
+            $query->where('tanggal_pengiriman', '>=', $request->startDate);
+        }
+
+        // Filter tanggal akhir
+        if ($request->filled('endDate')) {
+            $query->where('tanggal_pengiriman', '<=', $request->endDate);
+        }
+
+        // Filter nama kebun
+        if ($request->filled('namaKebun')) {
+            $query->where('nama_kebun', $request->namaKebun);
+        }
+
+        $kebuns = $query->paginate(10)->withQueryString();
+
+        return view('admin.rekapKebun', [
+            'title' => 'Rekap Kebun',
+            'kebuns' => $kebuns,
+            'namaKebuns' => $namaKebuns, // kirim ke view
+        ]);
+    }
+
+
+
+    public function update(Request $request, $id)
+    {
+        // Validasi input
+        $validatedData = $request->validate([
+            'tanggal_pengiriman' => 'required|date',
+            'nama_kebun'         => 'required|string|max:255',
+            'afdeling'           => 'required|string|max:255',
+            'nomor_blanko_pb25'  => 'required|string|max:255',
+            'nopol_mobil'        => 'required|string|max:255',
+            'nama_supir'         => 'required|string|max:255',
+            'gambar1'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'gambar2'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'gambar3'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // Cari data
+        $kebun = Kebun::findOrFail($id);
+
+        // Update field biasa
+        $kebun->tanggal_pengiriman = $validatedData['tanggal_pengiriman'];
+        $kebun->nama_kebun         = $validatedData['nama_kebun'];
+        $kebun->afdeling           = $validatedData['afdeling'];
+        $kebun->nomor_blanko_pb25  = $validatedData['nomor_blanko_pb25'];
+        $kebun->nopol_mobil        = $validatedData['nopol_mobil'];
+        $kebun->nama_supir         = $validatedData['nama_supir'];
+
+        // Update gambar 1
+        if ($request->hasFile('gambar1')) {
+            if ($kebun->foto_keseluruhan_kebun) {
+                Storage::disk('public')->delete($kebun->foto_keseluruhan_kebun);
+            }
+            $path = $request->file('gambar1')->store('kebun', 'public');
+            $kebun->foto_keseluruhan_kebun = $path;
+        }
+
+        // Update gambar 2
+        if ($request->hasFile('gambar2')) {
+            if ($kebun->foto_sebelum_kebun) {
+                Storage::disk('public')->delete($kebun->foto_sebelum_kebun);
+            }
+            $path = $request->file('gambar2')->store('kebun', 'public');
+            $kebun->foto_sebelum_kebun = $path;
+        }
+
+        // Update gambar 3
+        if ($request->hasFile('gambar3')) {
+            if ($kebun->foto_sesudah_kebun) {
+                Storage::disk('public')->delete($kebun->foto_sesudah_kebun);
+            }
+            $path = $request->file('gambar3')->store('kebun', 'public');
+            $kebun->foto_sesudah_kebun = $path;
+        }
+
+        // Simpan perubahan
+        $kebun->save();
+
+        return redirect()->route('kebun')->with('success', 'Data berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $kebun = Kebun::findOrFail($id);
+
+        // Hapus gambar jika ada
+        if ($kebun->foto_keseluruhan_kebun) {
+            Storage::disk('public')->delete($kebun->foto_keseluruhan_kebun);
+        }
+        if ($kebun->foto_sebelum_kebun) {
+            Storage::disk('public')->delete($kebun->foto_sebelum_kebun);
+        }
+        if ($kebun->foto_sesudah_kebun) {
+            Storage::disk('public')->delete($kebun->foto_sesudah_kebun);
+        }
+
+        // Hapus data
+        $kebun->delete();
+
+        return redirect()->route('kebun')->with('success', 'Data berhasil dihapus!');
     }
 }

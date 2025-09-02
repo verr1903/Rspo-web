@@ -22,7 +22,7 @@
                         </a>
                     </li>
                     <li class="pc-item">
-                        <a href="rekapKebun" class="pc-link py-3">
+                        <a href="{{ route('kebun') }}" class="pc-link py-3">
                             <span class="pc-micon"><i class="ti ti-leaf"></i></span>
                             <span class="pc-mtext">Rekap Kebun</span>
                         </a>
