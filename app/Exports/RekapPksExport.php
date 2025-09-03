@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Kebun;
+use App\Models\Pks;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -11,7 +11,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class RekapKebunExport implements FromCollection, WithHeadings, WithMapping, WithDrawings, WithEvents
+class RekapPksExport implements FromCollection, WithHeadings, WithMapping, WithDrawings, WithEvents
 {
     private $rows;
     private $index = 0;
@@ -32,9 +32,8 @@ class RekapKebunExport implements FromCollection, WithHeadings, WithMapping, Wit
         return [
             'No',
             'Tanggal Pengiriman',
-            'Nama Kebun',
-            'Afdeling',
-            'Nomor Blanko PB25',
+            'Nama Pks',
+            'Nomor Blanko PB 33',
             'Nopol Mobil',
             'Nama Supir',
             'Foto Keseluruhan',
@@ -42,19 +41,17 @@ class RekapKebunExport implements FromCollection, WithHeadings, WithMapping, Wit
             'Foto Sesudah'
         ];
     }
-
     // Data per baris (exclude created_at & updated_at)
-    public function map($kebun): array
+    public function map($pks): array
     {
         $this->index++; // tiap kali dipanggil tambah 1
         return [
             $this->index, // nomor urut
-            $kebun->tanggal_pengiriman,
-            $kebun->nama_kebun,
-            $kebun->afdeling,
-            $kebun->nomor_blanko_pb25,
-            $kebun->nopol_mobil,
-            $kebun->nama_supir,
+            $pks->tanggal_pengiriman,
+            $pks->nama_pks,
+            $pks->nomor_blanko_pb33,
+            $pks->nopol_mobil,
+            $pks->nama_supir,
             '', // gambar isi di drawings()
             '', // gambar isi di drawings()
             '', // gambar isi di drawings()
@@ -69,27 +66,27 @@ class RekapKebunExport implements FromCollection, WithHeadings, WithMapping, Wit
 
         foreach ($this->rows as $row) {
             // Foto keseluruhan
-            if ($row->foto_keseluruhan_kebun && file_exists(public_path('storage/' . $row->foto_keseluruhan_kebun))) {
+            if ($row->foto_keseluruhan_pks && file_exists(public_path('storage/' . $row->foto_keseluruhan_pks))) {
                 $drawing = new Drawing();
-                $drawing->setPath(public_path('storage/' . $row->foto_keseluruhan_kebun));
+                $drawing->setPath(public_path('storage/' . $row->foto_keseluruhan_pks));
                 $drawing->setHeight(80);
                 $drawing->setCoordinates('H' . $rowIndex); // Kolom H
                 $drawings[] = $drawing;
             }
 
             // Foto sebelum
-            if ($row->foto_sebelum_kebun && file_exists(public_path('storage/' . $row->foto_sebelum_kebun))) {
+            if ($row->foto_sebelum_pks && file_exists(public_path('storage/' . $row->foto_sebelum_pks))) {
                 $drawing = new Drawing();
-                $drawing->setPath(public_path('storage/' . $row->foto_sebelum_kebun));
+                $drawing->setPath(public_path('storage/' . $row->foto_sebelum_pks));
                 $drawing->setHeight(80);
                 $drawing->setCoordinates('I' . $rowIndex); // Kolom I
                 $drawings[] = $drawing;
             }
 
             // Foto sesudah
-            if ($row->foto_sesudah_kebun && file_exists(public_path('storage/' . $row->foto_sesudah_kebun))) {
+            if ($row->foto_sesudah_pks && file_exists(public_path('storage/' . $row->foto_sesudah_pks))) {
                 $drawing = new Drawing();
-                $drawing->setPath(public_path('storage/' . $row->foto_sesudah_kebun));
+                $drawing->setPath(public_path('storage/' . $row->foto_sesudah_pks));
                 $drawing->setHeight(80);
                 $drawing->setCoordinates('J' . $rowIndex); // Kolom J
                 $drawings[] = $drawing;

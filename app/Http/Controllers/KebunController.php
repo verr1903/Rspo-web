@@ -9,6 +9,7 @@ use App\Exports\RekapKebunExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ListKebun;
 use App\Models\ListAfdeling;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class KebunController extends Controller
 {
@@ -47,9 +48,7 @@ class KebunController extends Controller
             'listAfdelings' => $listAfdelings,
         ]);
     }
-
-
-
+    
     public function update(Request $request, $id)
     {
         // Validasi input
@@ -132,7 +131,6 @@ class KebunController extends Controller
 
     public function exportExcel(Request $request)
     {
-        // Query filter sama dengan index()
         $query = Kebun::query();
 
         if ($request->filled('startDate')) {
@@ -147,9 +145,17 @@ class KebunController extends Controller
             $query->where('nama_kebun', $request->namaKebun);
         }
 
-        $rows = $query->get();
-
-        // lempar rows ke export
+        $rows = $query->get(); // <-- ambil semua data tanpa paginate
         return Excel::download(new RekapKebunExport($rows), 'rekap_kebun.xlsx');
+    }
+
+    public function exportPDFPerKebun($id)
+    {
+        $kebun = Kebun::findOrFail($id);
+
+        $pdf = PDF::loadView('pdf.kebun', compact('kebun'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->download('rekap_kebun_' . $kebun->id . '.pdf');
     }
 }

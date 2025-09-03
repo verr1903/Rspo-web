@@ -31,9 +31,9 @@ class PksFactory extends Factory
             'nomor_blanko_pb33'     => $this->faker->numerify('PB33-###'),
             'nopol_mobil'           => $this->faker->bothify('BK #### ??'),
             'nama_supir'            => $this->faker->name(),
-            'foto_keseluruhan_pks'  => 'https://via.placeholder.com/300x200.png?text=Foto+1',
-            'foto_sebelum_pks'      => 'https://via.placeholder.com/300x200.png?text=Foto+2',
-            'foto_sesudah_pks'      => 'https://via.placeholder.com/300x200.png?text=Foto+3',
+            'foto_keseluruhan_pks'  => 'pks/tester.png',
+            'foto_sebelum_pks'      => 'pks/tester.png',
+            'foto_sesudah_pks'      => 'pks/tester.png',
         ];
     }
 }

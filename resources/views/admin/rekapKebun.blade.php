@@ -5,8 +5,7 @@
   <div class="pc-container animate-fadeInUp">
     <div class="pc-content">
 
-
-
+      <!-- alert -->
       @if ($errors->any())
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
         {{ $errors->first() }}
@@ -21,9 +20,6 @@
           Download EXCEL
         </button>
       </div>
-
-
-
       <!-- end download excel -->
 
       <!-- filter -->
@@ -164,11 +160,12 @@
                         <i class="ti ti-trash"></i>
                       </button>
 
-                      <!-- button donwload pdf -->
-                      <a href="#" class="btn btn-sm btn-primary"
+                      <!-- button download pdf -->
+                      <a href="{{ route('rekapKebun.pdf.row', $kebun->id) }}" class="btn btn-sm btn-primary"
                         style="border-radius:50%;" title="Download PDF" target="_blank">
                         <i class="ti ti-download"></i>
                       </a>
+
                     </div>
                   </td>
                 </tr>
@@ -307,7 +304,7 @@
 
   <!-- Modal Edit (global) -->
   <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg"> <!-- Lebar lebih besar untuk muat 2 kolom -->
+    <div class="modal-dialog modal-lg"> 
       <div class="modal-content">
         <form id="editForm" method="POST" enctype="multipart/form-data">
           @csrf
@@ -320,7 +317,7 @@
 
           <div class="modal-body">
             <input type="hidden" id="edit_id" name="id">
-            <div class="row g-2"> <!-- g-2: jarak antar kolom lebih rapat -->
+            <div class="row g-2"> 
 
               <!-- Kolom Kiri -->
               <div class="col-md-6">
@@ -444,7 +441,6 @@
                 </div>
               </div>
 
-
             </div>
           </div>
 
@@ -567,7 +563,7 @@
       }
     });
 
-    // preview gambar 2 baru sebelum upload
+    // preview gambar 3 baru sebelum upload
     document.getElementById('gambar3_input').addEventListener('change', function(e) {
       const preview = document.getElementById('preview3_new');
       const wrapper = document.getElementById('preview3_wrapper');
@@ -586,7 +582,7 @@
       }
     });
 
-    // cetak excel
+    // Download Excel
     document.getElementById('downloadExcelBtn').addEventListener('click', function(e) {
       e.preventDefault();
 
@@ -624,7 +620,7 @@
       });
     });
 
-    // reset filter
+    // Reset filter
     document.getElementById('resetFilter').addEventListener('click', function() {
       Swal.fire({
         title: 'Reset Filter?',

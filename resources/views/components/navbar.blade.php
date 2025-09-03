@@ -28,13 +28,13 @@
                         </a>
                     </li>
                     <li class="pc-item">
-                        <a href="rekapPks" class="pc-link py-3">
+                        <a href="{{ route('pks') }}" class="pc-link py-3">
                             <span class="pc-micon"><i class="ti ti-settings"></i></span>
                             <span class="pc-mtext">Rekap PKS</span>
                         </a>
                     </li>
                     <li class="pc-item">
-                        <a href="dataList" class="pc-link py-3">
+                        <a href="{{ route('dataList') }}" class="pc-link py-3">
                             <span class="pc-micon"><i class="ti ti-clipboard"></i></span>
                             <span class="pc-mtext">Data List</span>
                         </a>
