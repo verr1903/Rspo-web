@@ -53,6 +53,7 @@ class PksController extends Controller
         $validatedData = $request->validate([
             'tanggal_pengiriman' => 'required|date',
             'nama_pks'           => 'required|string|max:255',
+            'tujuan_pengiriman'  => 'required|string|max:255',
             'nomor_blanko_pb33'  => 'required|string|max:255',
             'nopol_mobil'        => 'required|string|max:255',
             'nama_supir'         => 'required|string|max:255',
@@ -67,6 +68,7 @@ class PksController extends Controller
         // Update field biasa
         $pks->tanggal_pengiriman = $validatedData['tanggal_pengiriman'];
         $pks->nama_pks           = $validatedData['nama_pks'];
+        $pks->tujuan_pengiriman  = $validatedData['tujuan_pengiriman'];
         $pks->nomor_blanko_pb33  = $validatedData['nomor_blanko_pb33'];
         $pks->nopol_mobil        = $validatedData['nopol_mobil'];
         $pks->nama_supir         = $validatedData['nama_supir'];

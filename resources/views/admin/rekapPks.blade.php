@@ -97,6 +97,7 @@
                   <th>No</th>
                   <th>Tanggal Pengiriman</th>
                   <th>Nama PKS</th>
+                  <th>Tujuan Pengiriman</th>
                   <th>Detail</th>
                   <th>Aksi</th>
                 </tr>
@@ -108,6 +109,7 @@
                   <td>{{ $loop->iteration + ($pkss->currentPage()-1) * $pkss->perPage() }}</td>
                   <td>{{ $pks->tanggal_pengiriman }}</td>
                   <td>{{ $pks->nama_pks }}</td>
+                  <td>{{ $pks->tujuan_pengiriman }}</td>
 
                   <!-- Tombol detail -->
                   <td>
@@ -115,7 +117,8 @@
                       data-bs-toggle="modal" data-bs-target="#detailModal"
                       data-id="{{ $pks->id }}"
                       data-tanggal="{{ $pks->tanggal_pengiriman }}"
-                      data-nama="{{ $pks->nama_pks }}"
+                      data-pks="{{ $pks->nama_pks }}"
+                      data-pengiriman="{{ $pks->tujuan_pengiriman }}"
                       data-blanko="{{ $pks->nomor_blanko_pb33 }}"
                       data-nopol="{{ $pks->nopol_mobil }}"
                       data-supir="{{ $pks->nama_supir }}"
@@ -138,6 +141,7 @@
                         data-id="{{ $pks->id }}"
                         data-tanggal="{{ $pks->tanggal_pengiriman }}"
                         data-pks="{{ $pks->nama_pks }}"
+                        data-pengiriman="{{ $pks->tujuan_pengiriman }}"
                         data-blanko="{{ $pks->nomor_blanko_pb33 }}"
                         data-nopol="{{ $pks->nopol_mobil }}"
                         data-supir="{{ $pks->nama_supir }}"
@@ -239,7 +243,11 @@
             </tr>
             <tr>
               <th>Nama PKS</th>
-              <td data-field="nama"></td>
+              <td data-field="pks"></td>
+            </tr>
+            <tr>
+              <th>Tujuan Pengiriman</th>
+              <td data-field="tujuan"></td>
             </tr>
             <tr>
               <th>Nomor Blanko PB33</th>
@@ -328,6 +336,11 @@
                 <div class="mb-2">
                   <label for="edit_supir" class="form-label">Nama Supir</label>
                   <input type="text" class="form-control form-control-sm" id="edit_supir" name="nama_supir" required>
+                </div>
+
+                <div class="mb-2">
+                  <label for="edit_pengiriman" class="form-label">Tujuan Pengiriman</label>
+                  <input type="text" class="form-control form-control-sm" id="edit_pengiriman" name="tujuan_pengiriman" required>
                 </div>
               </div>
 
@@ -427,6 +440,7 @@
 
         this.querySelector("td[data-field='tanggal']").textContent = button.getAttribute("data-tanggal");
         this.querySelector("td[data-field='pks']").textContent = button.getAttribute("data-pks");
+        this.querySelector("td[data-field='tujuan']").textContent = button.getAttribute("data-pengiriman");
         this.querySelector("td[data-field='blanko']").textContent = button.getAttribute("data-blanko");
         this.querySelector("td[data-field='nopol']").textContent = button.getAttribute("data-nopol");
         this.querySelector("td[data-field='supir']").textContent = button.getAttribute("data-supir");
@@ -446,6 +460,7 @@
       document.getElementById('edit_id').value = button.getAttribute("data-id");
       document.getElementById('edit_tanggal').value = button.getAttribute("data-tanggal");
       document.getElementById('edit_pks').value = button.getAttribute("data-pks");
+      document.getElementById('edit_pengiriman').value = button.getAttribute("data-pengiriman");
       document.getElementById('edit_blanko').value = button.getAttribute("data-blanko");
       document.getElementById('edit_nopol').value = button.getAttribute("data-nopol");
       document.getElementById('edit_supir').value = button.getAttribute("data-supir");

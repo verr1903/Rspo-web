@@ -119,7 +119,7 @@
     <div class="auth-wrapper v3">
       <div class="auth-form">
         <div class="auth-header">
-          <a href="/../dashboard/index.html" class="b-brand d-flex align-items-center text-decoration-none">
+          <a href="" class="b-brand d-flex align-items-center text-decoration-none">
             <!-- Logo -->
             <img src="/../assets/images/logo-RSPO.png" style="width: 60px;margin-left: 20px;"
               class="img-fluid logo-lg me-1" alt="logo">
@@ -138,8 +138,8 @@
             </div>
 
             <div class="form-group mb-3">
-              <label class="form-label">Email Address</label>
-              <input type="email" class="form-control" placeholder="Email Address">
+              <label class="form-label">Kode SAP</label>
+              <input type="text" class="form-control" placeholder="Kode SAP">
             </div>
 
             <div class="form-group mb-3">

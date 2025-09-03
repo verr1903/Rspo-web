@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
-    public function authenticate()
+public function index()
     {
-        return view('admin/index');
+
+        return view('login', [
+            'title'        => 'Login',
+        ]);
     }
 }

@@ -16,7 +16,7 @@
             <div class="navbar-content">
                 <ul class="pc-navbar">
                     <li class="pc-item">
-                        <a href="index" class="pc-link py-3">
+                        <a href="{{ route('dashboard') }}" class="pc-link py-3">
                             <span class="pc-micon"><i class="ti ti-dashboard"></i></span>
                             <span class="pc-mtext">Dashboard</span>
                         </a>

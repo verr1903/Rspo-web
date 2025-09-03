@@ -33,6 +33,7 @@ class RekapPksExport implements FromCollection, WithHeadings, WithMapping, WithD
             'No',
             'Tanggal Pengiriman',
             'Nama Pks',
+            'Tujuan Pengiriman',
             'Nomor Blanko PB 33',
             'Nopol Mobil',
             'Nama Supir',
@@ -49,6 +50,7 @@ class RekapPksExport implements FromCollection, WithHeadings, WithMapping, WithD
             $this->index, // nomor urut
             $pks->tanggal_pengiriman,
             $pks->nama_pks,
+            $pks->tujuan_pengiriman,
             $pks->nomor_blanko_pb33,
             $pks->nopol_mobil,
             $pks->nama_supir,
@@ -109,6 +111,7 @@ class RekapPksExport implements FromCollection, WithHeadings, WithMapping, WithD
 
                 $event->sheet->getDelegate()->getColumnDimension('A')->setWidth(5);
                 $event->sheet->getDelegate()->getColumnDimension('B')->setWidth(18);
+                $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(15);
                 $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(15);
                 $event->sheet->getDelegate()->getColumnDimension('D')->setWidth(15);
                 $event->sheet->getDelegate()->getColumnDimension('E')->setWidth(20);

@@ -41,7 +41,7 @@
                                 <div class="tab-pane fade show active" id="drp-tab-1" role="tabpanel" aria-labelledby="drp-t1"
                                     tabindex="0">
                                     <hr style="margin-bottom: -1px;">
-                                    <a href="/../pages/login.html" class="dropdown-item pt-3 mt-2">
+                                    <a href="{{ route('login') }}" class="dropdown-item pt-3 mt-2">
                                         <i class="ti ti-power"></i>
                                         <span>Logout</span>
                                     </a>

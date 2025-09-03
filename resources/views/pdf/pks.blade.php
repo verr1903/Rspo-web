@@ -84,6 +84,10 @@
                 <td>{{ $pks->nama_pks }}</td>
             </tr>
             <tr>
+                <th>Tujuan Pengiriman</th>
+                <td>{{ $pks->tujuan_pengiriman }}</td>
+            </tr>
+            <tr>
                 <th>Nomor Blanko PB 33</th>
                 <td>{{ $pks->nomor_blanko_pb33 }}</td>
             </tr>

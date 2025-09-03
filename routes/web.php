@@ -5,19 +5,19 @@ use App\Http\Controllers\KebunController;
 use App\Http\Controllers\PksController;
 use App\Exports\RekapKebunExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DataListController;
 use App\Http\Controllers\ListPksController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ListKebunController;
 use App\Http\Controllers\ListAfdelingController;
 
 
-Route::get('/', function () {
-    return view('login');
-});
+Route::get('/', [LoginController::class, 'index'])->name('login');
 
-Route::get('index', function () {
-    return view('admin.index', ['title' => 'Dashboard']);
-});
+// dashboard
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 
 // rekap kebun
 Route::get('rekapKebun', [KebunController::class, 'index'])->name('kebun');
