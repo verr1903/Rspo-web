@@ -150,7 +150,10 @@
             
             <a href="index">
               <div class="d-grid mt-4">
-                <button type="button" class="btn btn-primary">Login</button>
+                <a href="{{ route('dashboard') }}">
+                  <button type="button" class="btn btn-primary">Login</button>
+                </a>
+                
               </div>
             </a>
           </div>
