@@ -11,6 +11,7 @@ use App\Http\Controllers\ListPksController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ListKebunController;
 use App\Http\Controllers\ListAfdelingController;
+use App\Http\Controllers\AndroidController;
 
 
 Route::get('/', [LoginController::class, 'index'])->name('login');
@@ -38,5 +39,3 @@ Route::get('/dataList', [DataListController::class, 'index'])->name('dataList');
 Route::resource('list-pks', ListPksController::class)->only(['store', 'update', 'destroy']);
 Route::resource('list-kebun', ListKebunController::class)->only(['store', 'update', 'destroy']);
 Route::resource('list-afdeling', ListAfdelingController::class)->only(['store', 'update', 'destroy']);
-
-

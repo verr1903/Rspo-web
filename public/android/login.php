@@ -14,7 +14,7 @@ if (!$login || !$password) {
 $stmt = $conn->prepare("SELECT * FROM users WHERE username=? OR email=? LIMIT 1");
 $stmt->bind_param("ss", $login, $login);
 $stmt->execute();
-$result = $stmt->get_result();
+// $result = $stmt->get_result();
 
 if ($user = $result->fetch_assoc()) {
     // cek hash password
