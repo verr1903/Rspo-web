@@ -17,3 +17,7 @@ Route::get('/pks', [AndroidController::class, 'getPks']);
 // insert data
 Route::post('/insert-kebun', [AndroidController::class, 'insertKebun']);
 Route::post('/insert-pks', [AndroidController::class, 'insertPks']);
+
+//history
+Route::get('/history/{user_id}', [AndroidController::class, 'getHistory']);
+
